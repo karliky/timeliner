@@ -1,2 +1,36 @@
 {
+  "extends": "airbnb/legacy",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "require": true,
+    "module": true
+  },
+  "rules": {
+    "brace-style": "off",
+    "comma-dangle": [ 2, "never" ],
+    "consistent-return": "off",
+    "func-names": "off",
+    "no-alert": "off",
+    "new-cap": "off",
+    "max-len": [2, 150, 4],
+    "indent": ["error", "tab"],
+    "no-else-return": "off",
+    "no-multi-spaces": "off",
+    "no-param-reassign": "off",
+    "no-shadow": "off",
+    "no-underscore-dangle": "off",
+    "no-use-before-define": "off",
+    "padded-blocks": "off",
+    "space-before-function-paren": "off",
+    "strict": "off",
+    "vars-on-top": "off",
+    "valid-jsdoc": ["error", {
+      "requireParamDescription": true,
+      "requireReturn": false,
+      "requireReturnDescription": false
+    }]
+  }
 }
