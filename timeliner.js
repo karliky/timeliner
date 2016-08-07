@@ -1083,8 +1083,10 @@ function Timeliner(target, customSettings) {
 	pane.appendChild(paneTitle);
 
 	var labelStatus = document.createElement('span');
-	labelStatus.textContent = 'hello!';
+	labelStatus.id = 'labelStatus';
+	labelStatus.textContent = '';
 	labelStatus.style.marginLeft = '10px';
+	labelStatus.style.float = 'left';
 
 	this.setStatus = function(text) {
 		labelStatus.textContent = text;
@@ -1108,44 +1110,8 @@ function Timeliner(target, customSettings) {
 		textAlign: 'right'
 	});
 
-
-	// var button_save = document.createElement('button');
-	// style(button_save, buttonStyles);
-	// button_save.textContent = 'Save';
-	// button_save.onclick = function() {
-	// 	save();
-	// };
-
-	// var button_load = document.createElement('button');
-	// style(button_load, buttonStyles);
-	// button_load.textContent = 'Import';
-	// button_load.onclick = this.promptLoad;
-
-	// var button_open = document.createElement('button');
-	// style(button_open, buttonStyles);
-	// button_open.textContent = 'Open';
-	// button_open.onclick = this.promptOpen;
-
-
-	// bottomRight.appendChild(button_load);
-	// bottomRight.appendChild(button_save);
-	// bottomRight.appendChild(button_open);
-
-	paneStatus.appendChild(labelStatus);
+	bottomRight.appendChild(labelStatus);
 	paneStatus.appendChild(bottomRight);
-
-
-	/**/
-	// zoom in
-	// var zoomIn = new IconButton(12, 'zoom_in', 'zoom in', dispatcher);
-	// zoom out
-	// var zoomOut = new IconButton(12, 'zoom_out', 'zoom out', dispatcher);
-	// settings
-	// var cog = new IconButton(12, 'cog', 'settings', dispatcher);
-
-	// bottomRight.appendChild(zoomIn.dom);
-	// bottomRight.appendChild(zoom_out.dom);
-	// bottomRight.appendChild(cog.dom);
 
 	// add layer
 	var plus = new IconButton(12, 'plus', 'New Layer', dispatcher);
