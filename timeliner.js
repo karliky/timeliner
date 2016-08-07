@@ -772,6 +772,12 @@ function Timeliner(target, customSettings) {
 		label_status.textContent = text;
 	};
 
+	this.setBounds = function(left, top, width, height) {
+		utils.setBounds(pane, left, top, width, height);
+		utils.setBounds(ghostpane, left, top, width, height);
+		resize(width, height);
+	};
+
 	dispatcher.on('state:save', function(description) {
 		dispatcher.fire('status', description);
 		save('autosave');
@@ -1112,26 +1118,14 @@ function Timeliner(target, customSettings) {
 				needsResize = true;
 		});
 
-		// utils
-		function setBounds(element, x, y, w, h) {
-			element.style.left = x + 'px';
-			element.style.top = y + 'px';
-			element.style.width = w + 'px';
-			element.style.height = h + 'px';
-
-			if (element === pane) {
-				resize(w, h);
-			}
-		}
-
 		function hintHide() {
-			setBounds(ghostpane, b.left, b.top, b.width, b.height);
+			utils.setBounds(ghostpane, b.left, b.top, b.width, b.height);
 			ghostpane.style.opacity = 0;
 		}
 
-		setBounds(pane, Settings.left, Settings.top, Settings.width, Settings.height);
-		setBounds(ghostpane, Settings.left, Settings.top, Settings.width, Settings.height);
-
+		utils.setBounds(pane, Settings.left, Settings.top, Settings.width, Settings.height);
+		utils.setBounds(ghostpane, Settings.left, Settings.top, Settings.width, Settings.height);
+		resize(Settings.width, Settings.height);
 		// Mouse events
 		pane.addEventListener('mousedown', onMouseDown);
 		document.addEventListener('mousemove', onMove);
@@ -1253,23 +1247,23 @@ function Timeliner(target, customSettings) {
 
 				switch(checks()) {
 					case 'full-screen':
-						setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight);
+						utils.setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight);
 						ghostpane.style.opacity = 0.2;
 						break;
 					case 'snap-top-edge':
-						setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight / 2);
+						utils.setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight / 2);
 						ghostpane.style.opacity = 0.2;
 						break;
 					case 'snap-left-edge':
-						setBounds(ghostpane, 0, 0, window.innerWidth / 2, window.innerHeight);
+						utils.setBounds(ghostpane, 0, 0, window.innerWidth / 2, window.innerHeight);
 						ghostpane.style.opacity = 0.2;
 						break;
 					case 'snap-right-edge':
-						setBounds(ghostpane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
+						utils.setBounds(ghostpane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
 						ghostpane.style.opacity = 0.2;
 						break;
 					case 'snap-bottom-edge':
-						setBounds(ghostpane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
+						utils.setBounds(ghostpane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
 						ghostpane.style.opacity = 0.2;
 						break;
 					default:
@@ -1277,7 +1271,7 @@ function Timeliner(target, customSettings) {
 				}
 
 				if (preSnapped) {
-					setBounds(pane,
+					utils.setBounds(pane,
 						e.clientX - preSnapped.width / 2,
 						e.clientY - Math.min(clicked.y, preSnapped.height),
 						preSnapped.width,
@@ -1357,21 +1351,21 @@ function Timeliner(target, customSettings) {
 			switch(snapType) {
 				case 'full-screen':
 					// hintFull();
-					setBounds(pane, 0, 0, window.innerWidth, window.innerHeight);
+					utils.setBounds(pane, 0, 0, window.innerWidth, window.innerHeight);
 					break;
 				case 'snap-top-edge':
 					// hintTop();
-					setBounds(pane, 0, 0, window.innerWidth, window.innerHeight / 2);
+					utils.setBounds(pane, 0, 0, window.innerWidth, window.innerHeight / 2);
 					break;
 				case 'snap-left-edge':
 					// hintLeft();
-					setBounds(pane, 0, 0, window.innerWidth / 2, window.innerHeight);
+					utils.setBounds(pane, 0, 0, window.innerWidth / 2, window.innerHeight);
 					break;
 				case 'snap-right-edge':
-					setBounds(pane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
+					utils.setBounds(pane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
 					break;
 				case 'snap-bottom-edge':
-					setBounds(pane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
+					utils.setBounds(pane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
 					break;
 			}
 		}
@@ -2333,11 +2327,19 @@ module.exports = {
 	style: style,
 	saveToFile: saveToFile,
 	openAs: openAs,
+	setBounds: setBounds,
 	format_friendly_seconds: format_friendly_seconds,
 	findTimeinLayer: findTimeinLayer,
 	timeAtLayer: timeAtLayer,
 	proxy_ctx: proxy_ctx
 };
+
+function setBounds(element, x, y, w, h) {
+	element.style.left = x + 'px';
+	element.style.top = y + 'px';
+	element.style.width = w + 'px';
+	element.style.height = h + 'px';
+}
 
 /**************************/
 // Utils
@@ -2359,7 +2361,7 @@ function saveToFile(string, filename) {
 
 	var blob = new Blob([string], { type: 'octet/stream' }), // application/json
 		url = window.URL.createObjectURL(blob);
-	
+
 	a.href = url;
 	a.download = filename;
 
@@ -2396,7 +2398,7 @@ function handleFileSelect(evt) {
 		var data = e.target.result;
 		openCallback(data);
 	};
-	
+
 	reader.readAsText(f);
 
 	input.value = '';
@@ -2415,7 +2417,7 @@ function openAs(callback, target) {
 		target = target || document.body;
 		target.appendChild(input);
 	}
-	
+
 	fakeClick(input);
 }
 
@@ -2430,7 +2432,7 @@ function fakeClick(target) {
 
 function format_friendly_seconds(s, type) {
 	// TODO Refactor to 60fps???
-	// 20 mins * 60 sec = 1080 
+	// 20 mins * 60 sec = 1080
 	// 1080s * 60fps = 1080 * 60 < Number.MAX_SAFE_INTEGER
 
 	var raw_secs = s | 0;
@@ -2451,7 +2453,7 @@ function format_friendly_seconds(s, type) {
 		// else str = mins + ':' + secs_micro;
 		// else str = secs_micro + 's'; /// .toFixed(2)
 	}
-	return str;	
+	return str;
 }
 
 // get object at time
@@ -2562,13 +2564,13 @@ function timeAtLayer(layer, t) {
 		value: entry.value,
 		can_tween: false,
 		keyframe: false
-	}; 
+	};
 
 }
 
 
 function proxy_ctx(ctx) {
-	// Creates a proxy 2d context wrapper which 
+	// Creates a proxy 2d context wrapper which
 	// allows the fluent / chaining API.
 	var wrapper = {};
 

@@ -7,11 +7,19 @@ module.exports = {
 	style: style,
 	saveToFile: saveToFile,
 	openAs: openAs,
+	setBounds: setBounds,
 	format_friendly_seconds: format_friendly_seconds,
 	findTimeinLayer: findTimeinLayer,
 	timeAtLayer: timeAtLayer,
 	proxy_ctx: proxy_ctx
 };
+
+function setBounds(element, x, y, w, h) {
+	element.style.left = x + 'px';
+	element.style.top = y + 'px';
+	element.style.width = w + 'px';
+	element.style.height = h + 'px';
+}
 
 /**************************/
 // Utils
@@ -33,7 +41,7 @@ function saveToFile(string, filename) {
 
 	var blob = new Blob([string], { type: 'octet/stream' }), // application/json
 		url = window.URL.createObjectURL(blob);
-	
+
 	a.href = url;
 	a.download = filename;
 
@@ -70,7 +78,7 @@ function handleFileSelect(evt) {
 		var data = e.target.result;
 		openCallback(data);
 	};
-	
+
 	reader.readAsText(f);
 
 	input.value = '';
@@ -89,7 +97,7 @@ function openAs(callback, target) {
 		target = target || document.body;
 		target.appendChild(input);
 	}
-	
+
 	fakeClick(input);
 }
 
@@ -104,7 +112,7 @@ function fakeClick(target) {
 
 function format_friendly_seconds(s, type) {
 	// TODO Refactor to 60fps???
-	// 20 mins * 60 sec = 1080 
+	// 20 mins * 60 sec = 1080
 	// 1080s * 60fps = 1080 * 60 < Number.MAX_SAFE_INTEGER
 
 	var raw_secs = s | 0;
@@ -125,7 +133,7 @@ function format_friendly_seconds(s, type) {
 		// else str = mins + ':' + secs_micro;
 		// else str = secs_micro + 's'; /// .toFixed(2)
 	}
-	return str;	
+	return str;
 }
 
 // get object at time
@@ -236,13 +244,13 @@ function timeAtLayer(layer, t) {
 		value: entry.value,
 		can_tween: false,
 		keyframe: false
-	}; 
+	};
 
 }
 
 
 function proxy_ctx(ctx) {
-	// Creates a proxy 2d context wrapper which 
+	// Creates a proxy 2d context wrapper which
 	// allows the fluent / chaining API.
 	var wrapper = {};
 
