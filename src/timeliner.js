@@ -37,7 +37,18 @@ function LayerProp(name) {
 	*/
 }
 
-function Timeliner(target) {
+function setOpts (standard, user) {
+  if (typeof user === 'object') {
+    for (var key in user) {
+      standard[key] = user[key];
+    }
+  }
+}
+
+function Timeliner(target, customSettings) {
+
+	setOpts(Settings, customSettings);
+
 	// Dispatcher for coordination
 	var dispatcher = new Dispatcher();
 
@@ -411,7 +422,7 @@ function Timeliner(target) {
 	div.style.top = '22px';
 
 	var pane = document.createElement('div');
-
+	pane.id = 'pane';
 	style(pane, {
 		position: 'fixed',
 		top: '20px',
@@ -445,6 +456,7 @@ function Timeliner(target) {
 	};
 
 	var pane_title = document.createElement('div');
+	pane_title.id = 'pane_title';
 	style(pane_title, header_styles, {
 		borderBottom: '1px solid ' + Theme.b,
 		textAlign: 'center'
@@ -453,7 +465,11 @@ function Timeliner(target) {
 	var title_bar = document.createElement('span');
 	pane_title.appendChild(title_bar);
 
-	title_bar.innerHTML = 'Timeliner ' + package_json.version;
+	var title = 'Timeliner ' + package_json.version;
+	if (Settings.title) {
+		title = Settings.title;
+	}
+	title_bar.innerHTML = title;
 	pane_title.appendChild(title_bar);
 
 	var top_right_bar = document.createElement('div');
@@ -858,8 +874,8 @@ function Timeliner(target) {
 			ghostpane.style.opacity = 0;
 		}
 
-		setBounds(pane, 0, 0, Settings.width, Settings.height);
-		setBounds(ghostpane, 0, 0, Settings.width, Settings.height);
+		setBounds(pane, Settings.left, Settings.top, Settings.width, Settings.height);
+		setBounds(ghostpane, Settings.left, Settings.top, Settings.width, Settings.height);
 
 		// Mouse events
 		pane.addEventListener('mousedown', onMouseDown);

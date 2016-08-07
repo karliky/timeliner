@@ -6,6 +6,8 @@ module.exports = {
 	LINE_HEIGHT: 26,
 	DIAMOND_SIZE: 10,
 	MARKER_TRACK_HEIGHT: 60,
+	left: 0,
+	top: 0,
 	width: 600,
 	height: 200,
 	TIMELINE_SCROLL_HEIGHT: 0,
