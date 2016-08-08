@@ -47,6 +47,10 @@ function Timeliner(target, customSettings) {
 	// Dispatcher for coordination
 	var dispatcher = new Dispatcher();
 
+	var params = {
+		needsResize: false
+	};
+
 	// Data
 	var data = new DataStore();
 	var layerStore = data.get('layers');
@@ -254,7 +258,7 @@ function Timeliner(target, customSettings) {
 			}
 		}
 
-		if (needsResize) {
+		if (needsResize || params.needsResize) {
 			// div.style.width = width + 'px';
 			// div.style.height = height + 'px';
 
@@ -263,7 +267,7 @@ function Timeliner(target, customSettings) {
 			timeline.resize();
 			repaintAll();
 			needsResize = false;
-
+			params.needsResize = false;
 			dispatcher.fire('resize');
 		}
 
@@ -732,7 +736,7 @@ function Timeliner(target, customSettings) {
 
 	this.getValues = getValueRanges;
 
-	DockingWindow(resize, pane, ghostpane, needsResize, paneTitle, resizeFull);
+	DockingWindow(resize, pane, ghostpane, params, paneTitle, resizeFull);
 }
 
 window.Timeliner = Timeliner;

@@ -63,7 +63,7 @@ module.exports={
 'use strict';
 var Settings  = require('./settings');
 var utils     = require('./utils');
-var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, resizeFull) {
+var DockingWindow = function(resize, pane, ghostpane, params, paneTitle, resizeFull) {
 
 	// Minimum resizable area
 	var minWidth = 100;
@@ -129,7 +129,7 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 		if (snapType) {
 			resizeEdges();
 		} else {
-			needsResize = true;
+			params.needsResize = true;
 		}
 	});
 
@@ -200,8 +200,6 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 
 	function canMove() {
 		return mouseOnTitle;
-		// return x > 0 && x < b.width && y > 0 && y < b.height
-		// && y < 18;
 	}
 
 	function calc(e) {
@@ -266,22 +264,27 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 			case 'full-screen':
 				utils.setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-top-edge':
 				utils.setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight / 2);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-left-edge':
 				utils.setBounds(ghostpane, 0, 0, window.innerWidth / 2, window.innerHeight);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-right-edge':
 				utils.setBounds(ghostpane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-bottom-edge':
 				utils.setBounds(ghostpane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			default:
 				hintHide();
@@ -343,20 +346,25 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 		case 'full-screen':
 			// hintFull();
 			utils.setBounds(pane, 0, 0, window.innerWidth, window.innerHeight);
+			params.needsResize = true;
 			break;
 		case 'snap-top-edge':
 			// hintTop();
 			utils.setBounds(pane, 0, 0, window.innerWidth, window.innerHeight / 2);
+			params.needsResize = true;
 			break;
 		case 'snap-left-edge':
 			// hintLeft();
 			utils.setBounds(pane, 0, 0, window.innerWidth / 2, window.innerHeight);
+			params.needsResize = true;
 			break;
 		case 'snap-right-edge':
 			utils.setBounds(pane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
+			params.needsResize = true;
 			break;
 		case 'snap-bottom-edge':
 			utils.setBounds(pane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
+			params.needsResize = true;
 			break;
 		default:
 			// nothing to do here
@@ -638,6 +646,10 @@ function Timeliner(target, customSettings) {
 	// Dispatcher for coordination
 	var dispatcher = new Dispatcher();
 
+	var params = {
+		needsResize: false
+	};
+
 	// Data
 	var data = new DataStore();
 	var layerStore = data.get('layers');
@@ -845,7 +857,10 @@ function Timeliner(target, customSettings) {
 			}
 		}
 
-		if (needsResize) {
+		if (needsResize || params.needsResize) {
+			console.log('needsResize');
+			console.log(needsResize, params.needsResize);
+			console.log('needsResize');
 			// div.style.width = width + 'px';
 			// div.style.height = height + 'px';
 
@@ -854,7 +869,7 @@ function Timeliner(target, customSettings) {
 			timeline.resize();
 			repaintAll();
 			needsResize = false;
-
+			params.needsResize = false;
 			dispatcher.fire('resize');
 		}
 
@@ -1323,7 +1338,7 @@ function Timeliner(target, customSettings) {
 
 	this.getValues = getValueRanges;
 
-	DockingWindow(resize, pane, ghostpane, needsResize, paneTitle, resizeFull);
+	DockingWindow(resize, pane, ghostpane, params, paneTitle, resizeFull);
 }
 
 window.Timeliner = Timeliner;
@@ -1427,7 +1442,7 @@ module.exports = Canvas;
 // allow Drag
 // allow Click
 // mouseOver
-//
+// 
 
 
 },{"./util_handle_drag":15}],10:[function(require,module,exports){
@@ -1523,7 +1538,7 @@ function IconButton(size, icon, tooltip, dp) {
 		function clearLongHoldTimer() {
 			clearTimeout(longHoldTimer);
 		}
-
+		
 		button.addEventListener('mousedown', startHold);
 		button.addEventListener('touchstart', startHold);
 		button.addEventListener('mouseup', clearLongHoldTimer);
@@ -1555,7 +1570,7 @@ function IconButton(size, icon, tooltip, dp) {
 	button.addEventListener('mouseover', function() {
 		// button.style.background = up;
 		style(button, borders);
-
+		
 		ctx.fillStyle = Theme.d;
 		// me.dropshadow = true;
 		ctx.shadowColor = Theme.b;
@@ -1582,7 +1597,7 @@ function IconButton(size, icon, tooltip, dp) {
 
 	button.addEventListener('mouseout', function() {
 		// ctx.fillStyle = Theme.c;
-
+		
 
 		button.style.background = normal;
 		style(button, no_borders);
@@ -1688,7 +1703,7 @@ function NumberUI(config) {
 
 	var span = document.createElement('input');
 	// span.type = 'number'; // spinner
-
+	
 	style(span, {
 		textAlign: 'center',
 		fontSize: '10px',
@@ -1730,7 +1745,7 @@ function NumberUI(config) {
 	function onMove(e) {
 		var dx = e.dx;
 		var dy = e.dy;
-
+	
 		var stepping = 1 * step;
 		// value = unchanged_value + dx * 0.000001 + dy * -10 * 0.01;
 		value = unchanged_value + dx * stepping + dy * -stepping;
@@ -1768,7 +1783,7 @@ var utils = require('./utils');
 
 // ********** class: ScrollBar ****************** //
 /*
-	Simple UI widget that displays a scrolltrack
+	Simple UI widget that displays a scrolltrack 
 	and slider, that fires some scroll events
 */
 // ***********************************************
@@ -2041,7 +2056,7 @@ module.exports = Dispatcher;
 function handleDrag(element, ondown, onmove, onup, down_criteria) {
 	var pointer = null;
 	var bounds = element.getBoundingClientRect();
-
+	
 	element.addEventListener('mousedown', onMouseDown);
 
 	function onMouseDown(e) {
@@ -2052,15 +2067,15 @@ function handleDrag(element, ondown, onmove, onup, down_criteria) {
 			return;
 		}
 
-
+		
 		document.addEventListener('mousemove', onMouseMove);
 		document.addEventListener('mouseup', onMouseUp);
-
+		
 		ondown(pointer);
 
 		e.preventDefault();
 	}
-
+	
 	function onMouseMove(e) {
 		handleMove(e);
 		pointer.moved = true;
@@ -2082,7 +2097,7 @@ function handleDrag(element, ondown, onmove, onup, down_criteria) {
 			moved: false
 		};
 	}
-
+	
 	function handleMove(e) {
 		bounds = element.getBoundingClientRect();
 		var currentx = e.clientX,
@@ -2096,12 +2111,12 @@ function handleDrag(element, ondown, onmove, onup, down_criteria) {
 		pointer.offsetx = offsetx;
 		pointer.offsety = offsety;
 	}
-
+	
 	function onMouseUp(e) {
 		handleMove(e);
 		onup(pointer);
 		pointer = null;
-
+		
 		document.removeEventListener('mousemove', onMouseMove);
 		document.removeEventListener('mouseup', onMouseUp);
 	}
@@ -2109,20 +2124,20 @@ function handleDrag(element, ondown, onmove, onup, down_criteria) {
 	element.addEventListener('touchstart', onTouchStart);
 
 	function onTouchStart(te) {
-
+		
 		if (te.touches.length == 1) {
-
+			
 			var e = te.touches[0];
 			if (down_criteria && !down_criteria(e)) return;
 			te.preventDefault();
 			handleStart(e);
 			ondown(pointer);
 		}
-
+		
 		element.addEventListener('touchmove', onTouchMove);
 		element.addEventListener('touchend', onTouchEnd);
 	}
-
+	
 	function onTouchMove(te) {
 		var e = te.touches[0];
 		onMouseMove(e);
@@ -2559,7 +2574,7 @@ function LayerView(layer, dispatcher) {
 	var dom = document.createElement('div');
 
 	var label = document.createElement('span');
-
+	
 	label.style.cssText = 'font-size: 12px; padding: 4px;';
 
 	var dropdown = document.createElement('select');
@@ -2580,7 +2595,7 @@ function LayerView(layer, dispatcher) {
 	var keyframe_button = document.createElement('button');
 	keyframe_button.innerHTML = '&#9672;'; // '&diams;' &#9671; 9679 9670 9672
 	keyframe_button.style.cssText = 'background: none; font-size: 12px; padding: 0px; font-family: monospace; float: right; width: 20px; height: ' + height + 'px; border-style:none; outline: none;'; //  border-style:inset;
-
+	
 	keyframe_button.addEventListener('click', function(e) {
 		console.log('clicked:keyframing...', state.get('_value').value);
 		dispatcher.fire('keyframe', layer, state.get('_value').value);
@@ -2599,7 +2614,7 @@ function LayerView(layer, dispatcher) {
 	button.style.cssText = 'font-size: 12px; padding: 1px; ';
 	dom.appendChild(button);
 
-
+	
 	*/
 
 	function ToggleButton(text) {
@@ -2664,7 +2679,7 @@ function LayerView(layer, dispatcher) {
 	dom.appendChild(keyframe_button);
 	dom.appendChild(number.dom);
 	dom.appendChild(dropdown);
-
+	
 
 	utils.style(dom, {
 		textAlign: 'left',
@@ -3785,7 +3800,7 @@ var
 
 
 function Rect() {
-
+	
 }
 
 Rect.prototype.set = function(x, y, w, h, color, outline) {
@@ -3842,7 +3857,7 @@ function ScrollCanvas(dispatcher, data) {
 		var totalTime = data.get('ui:totalTime').value;
 		var scrollTime = data.get('ui:scrollTime').value;
 		var currentTime = data.get('ui:currentTime').value;
-
+		
 		var pixels_per_second = data.get('ui:timeScale').value;
 
 		ctx.save();
@@ -3860,7 +3875,7 @@ function ScrollCanvas(dispatcher, data) {
 		ctx.strokeStyle = Theme.b;
 		ctx.rect(0, 0, w, h);
 		ctx.stroke();
-
+		
 		var totalTimePixels = totalTime * pixels_per_second;
 		var k = w / totalTimePixels;
 		scroller.k = k;
@@ -3870,17 +3885,17 @@ function ScrollCanvas(dispatcher, data) {
 		scroller.grip_length = grip_length;
 
 		scroller.left = scrollTime / totalTime * w;
-
+		
 		scrollRect.set(scroller.left, 0, scroller.grip_length, h);
 		scrollRect.paint(ctx);
 
-		var r = currentTime / totalTime * w;
+		var r = currentTime / totalTime * w;		
 
 		ctx.fillStyle =  Theme.c;
 		ctx.lineWidth = 2;
-
+		
 		ctx.beginPath();
-
+		
 		// circle
 		// ctx.arc(r, h2 / 2, h2 / 1.5, 0, Math.PI * 2);
 
@@ -3906,7 +3921,7 @@ function ScrollCanvas(dispatcher, data) {
 			draggingx = scroller.left;
 			return;
 		}
-
+		
 		var totalTime = data.get('ui:totalTime').value;
 		var pixels_per_second = data.get('ui:timeScale').value;
 		var w = width - 2 * MARGINS;
@@ -3916,21 +3931,21 @@ function ScrollCanvas(dispatcher, data) {
 
 		// data.get('ui:currentTime').value = t;
 		dispatcher.fire('time.update', t);
-
+		
 	};
 
 	this.onMove = function move(e) {
 		if (draggingx != null) {
 			var totalTime = data.get('ui:totalTime').value;
 			var w = width - 2 * MARGINS;
-
-			dispatcher.fire('update.scrollTime',
+			
+			dispatcher.fire('update.scrollTime', 
 				(draggingx + e.dx)  / w * totalTime);
 
 		} else {
-			this.onDown(e);
+			this.onDown(e);	
 		}
-
+		
 	};
 
 	this.onUp = function(e) {

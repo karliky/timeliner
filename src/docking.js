@@ -1,7 +1,7 @@
 'use strict';
 var Settings  = require('./settings');
 var utils     = require('./utils');
-var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, resizeFull) {
+var DockingWindow = function(resize, pane, ghostpane, params, paneTitle, resizeFull) {
 
 	// Minimum resizable area
 	var minWidth = 100;
@@ -67,7 +67,7 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 		if (snapType) {
 			resizeEdges();
 		} else {
-			needsResize = true;
+			params.needsResize = true;
 		}
 	});
 
@@ -138,8 +138,6 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 
 	function canMove() {
 		return mouseOnTitle;
-		// return x > 0 && x < b.width && y > 0 && y < b.height
-		// && y < 18;
 	}
 
 	function calc(e) {
@@ -204,22 +202,27 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 			case 'full-screen':
 				utils.setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-top-edge':
 				utils.setBounds(ghostpane, 0, 0, window.innerWidth, window.innerHeight / 2);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-left-edge':
 				utils.setBounds(ghostpane, 0, 0, window.innerWidth / 2, window.innerHeight);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-right-edge':
 				utils.setBounds(ghostpane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			case 'snap-bottom-edge':
 				utils.setBounds(ghostpane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
 				ghostpane.style.opacity = 0.2;
+				params.needsResize = true;
 				break;
 			default:
 				hintHide();
@@ -281,20 +284,25 @@ var DockingWindow = function(resize, pane, ghostpane, needsResize, paneTitle, re
 		case 'full-screen':
 			// hintFull();
 			utils.setBounds(pane, 0, 0, window.innerWidth, window.innerHeight);
+			params.needsResize = true;
 			break;
 		case 'snap-top-edge':
 			// hintTop();
 			utils.setBounds(pane, 0, 0, window.innerWidth, window.innerHeight / 2);
+			params.needsResize = true;
 			break;
 		case 'snap-left-edge':
 			// hintLeft();
 			utils.setBounds(pane, 0, 0, window.innerWidth / 2, window.innerHeight);
+			params.needsResize = true;
 			break;
 		case 'snap-right-edge':
 			utils.setBounds(pane, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
+			params.needsResize = true;
 			break;
 		case 'snap-bottom-edge':
 			utils.setBounds(pane, 0, window.innerHeight / 2, window.innerWidth, window.innerHeight / 2);
+			params.needsResize = true;
 			break;
 		default:
 			// nothing to do here
